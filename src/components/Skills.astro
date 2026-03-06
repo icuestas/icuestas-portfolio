@@ -1,0 +1,87 @@
+---
+import { useTranslations, type Lang } from '../i18n';
+
+const { lang = 'en' } = Astro.props as { lang: Lang };
+const t = useTranslations(lang);
+
+const core = [
+  {
+    label: lang === 'es' ? 'Frontend' : 'Frontend',
+    items: ['React', 'TypeScript', 'JavaScript', 'REST APIs'],
+  },
+  {
+    label: lang === 'es' ? 'Backend' : 'Backend experience',
+    items: ['Node.js', 'Java', 'Spring Boot'],
+  },
+  {
+    label: 'Testing',
+    items: ['Jest', 'Testing Library'],
+  },
+  {
+    label: lang === 'es' ? 'Herramientas' : 'Tools',
+    items: ['Git', 'CI/CD', 'Agile'],
+  },
+];
+
+const familiar = [
+  'HTML5', 'CSS3', 'Styled Components', 'CSS Modules',
+  'Vite', 'Webpack', 'Storybook', 'Express', 'Scrum',
+];
+---
+
+<section id="skills" class="relative py-24 px-6 overflow-hidden">
+  <div class="orb w-96 h-96 bg-sky-600 top-10 right-0 opacity-10"></div>
+
+  <div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="text-center mb-16">
+      <p class="text-cyan-400 text-sm font-semibold tracking-widest uppercase mb-3">{t('skills.eyebrow') as string}</p>
+      <h2 class="section-title">{t('skills.title') as string} <span class="gradient-text">{t('skills.title.hl') as string}</span></h2>
+      <div class="w-16 h-1 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full mx-auto mt-4"></div>
+    </div>
+
+    <!-- Core Stack -->
+    <div class="mb-10">
+      <div class="flex items-center gap-3 mb-6">
+        <span class="text-xs font-bold tracking-widest uppercase text-cyan-400">
+          {lang === 'es' ? 'Stack principal' : 'Core Stack'}
+        </span>
+        <div class="flex-1 h-px bg-gradient-to-r from-cyan-500/30 to-transparent"></div>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {core.map((group) => (
+          <div class="glass rounded-2xl p-5">
+            <p class="text-xs font-semibold tracking-wider uppercase text-white/40 mb-4">{group.label}</p>
+            <ul class="space-y-2.5">
+              {group.items.map((item) => (
+                <li class="flex items-center gap-2.5">
+                  <span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background: linear-gradient(135deg, #06b6d4, #3b82f6);"></span>
+                  <span class="text-sm text-white/80 font-medium">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Familiar With -->
+    <div>
+      <div class="flex items-center gap-3 mb-6">
+        <span class="text-xs font-bold tracking-widest uppercase text-white/35">
+          {lang === 'es' ? 'También trabajo con' : 'Familiar with'}
+        </span>
+        <div class="flex-1 h-px bg-white/10"></div>
+      </div>
+
+      <div class="flex flex-wrap gap-2.5">
+        {familiar.map((tech) => (
+          <span class="px-3.5 py-1.5 rounded-xl text-sm text-white/45 border border-white/8 hover:text-white/70 hover:border-white/20 transition-colors duration-200 cursor-default">
+            {tech}
+          </span>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>

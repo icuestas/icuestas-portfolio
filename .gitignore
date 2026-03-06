@@ -1,0 +1,8 @@
+.env
+.env.example
+node_modules
+.claude
+dist
+DEPLOYMENT.md
+.astro
+.netlify

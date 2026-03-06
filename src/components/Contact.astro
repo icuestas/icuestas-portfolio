@@ -1,0 +1,140 @@
+---
+import { useTranslations, type Lang } from '../i18n';
+
+const { lang = 'en' } = Astro.props as { lang: Lang };
+const t = useTranslations(lang);
+---
+
+<section id="contact" class="relative py-24 px-6 overflow-hidden">
+  <div class="orb w-80 h-80 bg-cyan-700 bottom-0  right-10 opacity-15"></div>
+  <div class="orb w-64 h-64 bg-blue-700 top-20   left-0   opacity-10"></div>
+
+  <div class="max-w-2xl mx-auto">
+    <!-- Header -->
+    <div class="text-center mb-12">
+      <p class="text-cyan-400 text-sm font-semibold tracking-widest uppercase mb-3">{t('contact.eyebrow') as string}</p>
+      <h2 class="section-title">{t('contact.title') as string} <span class="gradient-text">{t('contact.title.hl') as string}</span></h2>
+      <div class="w-16 h-1 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full mx-auto mt-4"></div>
+      <p class="text-white/50 max-w-xl mx-auto mt-6">{t('contact.subtitle') as string}</p>
+    </div>
+
+    <!-- Form only -->
+    <form id="contact-form" class="glass rounded-2xl p-8 space-y-5">
+      <div class="grid sm:grid-cols-2 gap-5">
+        <div>
+          <label for="name" class="block text-sm text-white/60 mb-2">{t('contact.form.name') as string}</label>
+          <input type="text" id="name" name="name" required
+            placeholder={t('contact.form.ph.name') as string} class="glass-input"/>
+        </div>
+        <div>
+          <label for="email" class="block text-sm text-white/60 mb-2">{t('contact.form.email') as string}</label>
+          <input type="email" id="email" name="email" required
+            placeholder={t('contact.form.ph.email') as string} class="glass-input"/>
+        </div>
+      </div>
+
+      <div>
+        <label for="subject" class="block text-sm text-white/60 mb-2">{t('contact.form.subject') as string}</label>
+        <input type="text" id="subject" name="subject" required
+          placeholder={t('contact.form.ph.subject') as string} class="glass-input"/>
+      </div>
+
+      <div>
+        <label for="message" class="block text-sm text-white/60 mb-2">{t('contact.form.message') as string}</label>
+        <textarea id="message" name="message" rows="5" required
+          placeholder={t('contact.form.ph.message') as string} class="glass-input resize-none"></textarea>
+      </div>
+
+      <!-- Honeypot -->
+      <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
+        <label for="_hp">Leave this empty</label>
+        <input type="text" id="_hp" name="_hp" tabindex="-1" autocomplete="off"/>
+      </div>
+
+      <!-- Status -->
+      <div id="form-success" class="hidden items-center gap-3 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-sm">
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <span id="success-text">{t('contact.success') as string}</span>
+      </div>
+      <div id="form-error" class="hidden items-center gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/25 text-red-400 text-sm">
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <span id="error-text">{t('contact.error.generic') as string}</span>
+      </div>
+
+      <button
+        type="submit"
+        id="submit-btn"
+        class="btn-primary w-full justify-center py-4 text-base"
+        data-label={t('contact.form.submit') as string}
+        data-sending={t('contact.form.sending') as string}
+      >
+        <span id="btn-text" class="relative z-10">{t('contact.form.submit') as string}</span>
+        <svg id="btn-icon" class="w-4 h-4 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+        </svg>
+        <svg id="btn-spinner" class="hidden w-4 h-4 relative z-10 animate-spin" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+        </svg>
+      </button>
+    </form>
+  </div>
+</section>
+
+<script>
+  const form       = document.getElementById('contact-form') as HTMLFormElement;
+  const submitBtn  = document.getElementById('submit-btn')   as HTMLButtonElement;
+  const btnText    = document.getElementById('btn-text')!;
+  const btnIcon    = document.getElementById('btn-icon')!;
+  const btnSpinner = document.getElementById('btn-spinner')!;
+  const successMsg = document.getElementById('form-success')!;
+  const errorMsg   = document.getElementById('form-error')!;
+  const errorText  = document.getElementById('error-text')!;
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    successMsg.classList.add('hidden');   successMsg.classList.remove('flex');
+    errorMsg.classList.add('hidden');     errorMsg.classList.remove('flex');
+
+    submitBtn.disabled = true;
+    btnText.textContent = submitBtn.dataset.sending ?? 'Sending...';
+    btnIcon.classList.add('hidden');
+    btnSpinner.classList.remove('hidden');
+
+    const data = {
+      name:    (form.elements.namedItem('name')    as HTMLInputElement).value,
+      email:   (form.elements.namedItem('email')   as HTMLInputElement).value,
+      subject: (form.elements.namedItem('subject') as HTMLInputElement).value,
+      message: (form.elements.namedItem('message') as HTMLTextAreaElement).value,
+      _hp:     (form.elements.namedItem('_hp')     as HTMLInputElement).value,
+    };
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      const result = await response.json();
+
+      if (response.ok) {
+        successMsg.classList.remove('hidden'); successMsg.classList.add('flex');
+        form.reset();
+      } else {
+        errorText.textContent = result.error ?? errorText.textContent;
+        errorMsg.classList.remove('hidden'); errorMsg.classList.add('flex');
+      }
+    } catch {
+      errorMsg.classList.remove('hidden'); errorMsg.classList.add('flex');
+    } finally {
+      submitBtn.disabled = false;
+      btnText.textContent = submitBtn.dataset.label ?? 'Send Message';
+      btnIcon.classList.remove('hidden');
+      btnSpinner.classList.add('hidden');
+    }
+  });
+</script>

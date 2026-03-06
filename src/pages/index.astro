@@ -1,0 +1,61 @@
+---
+export const prerender = true;
+
+import Navbar   from '../components/Navbar.astro';
+import Hero     from '../components/Hero.astro';
+import About    from '../components/About.astro';
+import Projects from '../components/Projects.astro';
+import Skills   from '../components/Skills.astro';
+import Contact  from '../components/Contact.astro';
+import '../styles/global.css';
+
+const lang = 'en' as const;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="description" content="Ivan Cuestas — Senior Frontend Engineer specializing in React & TypeScript. 5+ years building web applications for fintech and healthtech."/>
+    <meta name="author" content="Ivan Cuestas"/>
+    <link rel="alternate" hreflang="es" href="/es/"/>
+    <link rel="alternate" hreflang="en" href="/"/>
+    <meta property="og:type"        content="website"/>
+    <meta property="og:title"       content="Ivan Cuestas — Senior Frontend Engineer"/>
+    <meta property="og:description" content="5+ years building web applications for fintech and healthtech."/>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+    <title>Ivan Cuestas — Senior Frontend Engineer</title>
+  </head>
+  <body class="relative overflow-x-hidden">
+    <Navbar   {lang}/>
+    <main>
+      <Hero     {lang}/>
+      <About    {lang}/>
+      <Projects {lang}/>
+      <Skills   {lang}/>
+      <Contact  {lang}/>
+    </main>
+    <footer class="py-8 px-6 text-center text-white/30 text-sm border-t border-white/8">
+      <p>
+        Designed &amp; Built with <span class="text-cyan-400">♥</span> &middot; {new Date().getFullYear()}
+      </p>
+    </footer>
+    <script>
+      const observer = new IntersectionObserver(
+        (entries) => entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('opacity-100', 'translate-y-0');
+            entry.target.classList.remove('opacity-0', 'translate-y-8');
+            observer.unobserve(entry.target);
+          }
+        }),
+        { threshold: 0.1 }
+      );
+      document.querySelectorAll('section > .max-w-6xl').forEach((el) => {
+        el.classList.add('transition-all', 'duration-700', 'opacity-0', 'translate-y-8');
+        observer.observe(el);
+      });
+    </script>
+  </body>
+</html>
