@@ -11,11 +11,20 @@ export const POST: APIRoute = async ({ request }) => {
     return respond({ error: 'Invalid request.' }, 400);
   }
 
-  const { name, email, subject, message, _hp } = body as Record<string, string>;
+  const { name, email, subject, message, _hp, recaptcha_token } = body as Record<string, string>;
 
   // Honeypot: bots fill hidden fields, humans leave them empty
   if (_hp) {
     return respond({ success: true }, 200); // silently discard
+  }
+
+  // Verify reCAPTCHA token
+  if (recaptcha_token) {
+    const recaptchaScore = await verifyRecaptcha(recaptcha_token);
+    if (recaptchaScore < 0.5) {
+      // Score too low (likely spam), silently discard like honeypot
+      return respond({ success: true }, 200);
+    }
   }
 
   // Validate required fields
@@ -135,4 +144,25 @@ function buildEmailHtml(f: { name: string; email: string; subject: string; messa
   </div>
 </body>
 </html>`;
+}
+
+async function verifyRecaptcha(token: string): Promise<number> {
+  const secretKey = import.meta.env.RECAPTCHA_SECRET_KEY;
+  if (!secretKey) {
+    console.warn('[contact] RECAPTCHA_SECRET_KEY not configured, skipping verification');
+    return 1.0; // Allow if not configured
+  }
+
+  try {
+    const response = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `secret=${encodeURIComponent(secretKey)}&response=${encodeURIComponent(token)}`,
+    });
+    const data = await response.json() as { success: boolean; score: number };
+    return data.success ? data.score : 0;
+  } catch (err) {
+    console.error('[contact] reCAPTCHA verification error:', err);
+    return 0; // Treat as spam on error
+  }
 }
