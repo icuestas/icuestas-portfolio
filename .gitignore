@@ -6,3 +6,4 @@ dist
 DEPLOYMENT.md
 .astro
 .netlify
+.vercel
